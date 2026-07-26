@@ -8,23 +8,17 @@
 
   outputs =
     inputs@{
-      self,
-      backup-host,
       nix-config,
-      nixpkgs,
+      backup-host,
       ...
     }:
-    {
-      nixosConfigurations.oslo = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = {
-          inherit inputs;
-        };
-        modules = [
-          nix-config.nixosModules.default
-          backup-host.nixosModules.default
-          ./modules/configuration.nix
-        ];
-      };
+    nix-config.lib.mkHost {
+      hostname = "oslo";
+      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
+      modules = [
+        backup-host.nixosModules.default
+        ./modules/configuration.nix
+      ];
     };
 }
